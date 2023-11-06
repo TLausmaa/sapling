@@ -1,0 +1,5 @@
+let arr = [1, 2, 3]
+
+let instance_name = "abc123"
+
+let index = 34

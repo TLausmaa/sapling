@@ -1,0 +1,7 @@
+"sapling" {
+    readfile
+}
+
+let content = readfile("hello_world.spl")
+
+print(content)
