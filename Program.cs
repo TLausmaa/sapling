@@ -17,19 +17,24 @@ void CompileTarget(string filename)
         var type = $"{token.Type}".PadRight(20, ' ');
         Console.WriteLine($"{type}{token.Value}");
     }
+
+    var ast = new Ast();
+    ast.Build(tokens);
+    Console.WriteLine("");
+    AstPrinter.Print(ast);
 }
 
 void Run()
 {
-    var opts = Environment.GetCommandLineArgs();
-    if (opts.Length != 2)
-    {
-        RunTests();
-        return;
-    }
+    // var opts = Environment.GetCommandLineArgs();
+    // if (opts.Length != 2)
+    // {
+    //     RunTests();
+    //     return;
+    // }
     
-    var filename = opts[1];
-    CompileTarget(filename);
+    // var filename = opts[1];
+    CompileTarget("TestSource/hello_world.spl");
 }
 
 Run();
