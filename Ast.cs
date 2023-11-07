@@ -1,6 +1,3 @@
-using System.Security.Cryptography.X509Certificates;
-using Microsoft.VisualBasic;
-
 enum NodeType
 {
     FnDecl,
@@ -127,7 +124,6 @@ class Ast
     public TokenParseResult ParseToken(List<Token> tokens, int i)
     {
         Token token = tokens[i];
-        Console.WriteLine($"AST parse token '{token.Type}': '{token.Value}'");
 
         if (token.Type == TokenType.FnDecl)
         {
@@ -193,12 +189,13 @@ class AstPrinter
 {
     public static void Print(Ast ast)
     {
-        Console.WriteLine("Printing AST with root node count {0}", ast.RootNodes.Count);
+        Console.WriteLine($"# AST nodes are ({ast.RootNodes.Count}):");
         Console.WriteLine("".PadRight(30, '='));
         foreach (var node in ast.RootNodes)
         {
             PrintNode(node);
         }
+        Console.WriteLine("");
     }
 
     static void Print(int indent, string s)
