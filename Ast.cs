@@ -129,7 +129,7 @@ class Ast
         {
             var consumer = new TokenConsumer(tokens, i + 1);
             var fnDecl = new FnDeclNode();
-            var fnName = consumer.consume().Value.Value;
+            var fnName = consumer.consume()!.Value.Value;
             fnDecl.Name = fnName;
             consumer.consume(); // Skip left brace
             var childTokens = consumer.consumeUntil(TokenType.RightBrace);

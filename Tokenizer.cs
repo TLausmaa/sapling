@@ -59,6 +59,7 @@ class Tokenizer
 {
     TokenType ResolveToken(string value)
     {
+        Console.WriteLine($"Resolving token: '{value}'");
         if (value[0] == '"' && value[^1] == '"')
         {
             return TokenType.String;
@@ -103,6 +104,7 @@ class Tokenizer
 
     void AddAndResolveToken(ref List<Token> tokens, ref string current)
     {
+        if (string.IsNullOrEmpty(current)) return;
         var type = ResolveToken(current);
         AddToken(ref tokens, type, ref current);
     }

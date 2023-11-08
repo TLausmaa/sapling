@@ -6,23 +6,23 @@ void RunTests()
     tests.RunAll();
 }
 
-string RunCommandWithBash(string command)
-{
-    var psi = new ProcessStartInfo();
-    psi.FileName = "/bin/bash";
-    psi.Arguments = $"-c {command}";
-    psi.RedirectStandardOutput = true;
-    psi.UseShellExecute = false;
-    psi.CreateNoWindow = true;
+// string RunCommandWithBash(string command)
+// {
+//     var psi = new ProcessStartInfo();
+//     psi.FileName = "/bin/bash";
+//     psi.Arguments = $"-c {command}";
+//     psi.RedirectStandardOutput = true;
+//     psi.UseShellExecute = false;
+//     psi.CreateNoWindow = true;
 
-    using var process = Process.Start(psi);
+//     using var process = Process.Start(psi);
 
-    process.WaitForExit();
+//     process.WaitForExit();
 
-    var output = process.StandardOutput.ReadToEnd();
+//     var output = process.StandardOutput.ReadToEnd();
 
-    return output;
-}
+//     return output;
+// }
 
 void CompileTarget(string filename, bool printDebugInfo = false, bool printOutput = false)
 {
@@ -54,24 +54,23 @@ void CompileTarget(string filename, bool printDebugInfo = false, bool printOutpu
 
 void Run()
 {
-    // var opts = Environment.GetCommandLineArgs();
-    // if (opts.Length != 2)
-    // {
-    //     RunTests();
-    //     return;
-    // }
-    
-    // var filename = opts[1];
     var opts = Environment.GetCommandLineArgs();
-    var printDebug = false;
-    var printOutput = false;
-    if (opts.Length >= 3)
+    if (opts.Length < 2)
     {
-        printDebug = opts[2] == "--debug";
-        printOutput = opts[2] == "--output";
+        // Console.WriteLine("Usage: {program|dotnet run} <filename> [--debug|--output]");
+        // return;
     }
 
-    CompileTarget("TestSource/hello_world.spl", printDebug, printOutput);
+    if (opts.Contains("--test") || true)
+    {
+        RunTests();
+        return;
+    }
+
+    var filename = opts.Length >= 2 ? opts[1] : "TestSource/function_call_with_args.spl";
+    var printDebug = opts.Contains("--debug");
+    var printOutput = opts.Contains("--output");
+    CompileTarget(filename, printDebug, printOutput);
 }
 
 Run();

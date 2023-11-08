@@ -1,0 +1,6 @@
+fn greet(person, id) {
+  print("Hello " + person)
+  print("Id", id)
+}
+
+greet("Alice", 12)

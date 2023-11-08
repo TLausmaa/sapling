@@ -1,0 +1,15 @@
+{
+  "ExpectedTokens": [
+    { "Type": "FnDecl", "Value": "fn" },
+    { "type": "Identifier", "Value": "helloworld" },
+    { "Type": "LeftBrace", "Value": "{" },
+    { "Type": "Identifier", "Value": "print" },
+    { "Type": "LeftParenthesis", "Value": "(" },
+    { "Type": "String", "Value": "\"Hi there!\"" },
+    { "Type": "RightParenthesis", "Value": ")" },
+    { "Type": "RightBrace", "Value": "}" },
+    { "Type": "Identifier", "Value": "helloworld" },
+    { "Type": "LeftParenthesis", "Value": "(" },
+    { "Type": "RightParenthesis", "Value": ")" }
+  ]
+}

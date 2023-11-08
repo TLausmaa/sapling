@@ -21,7 +21,7 @@ class CodeGenerator
 
         foreach (var node in ast.RootNodes)
         {
-            sb.AppendLine(Generate(node));
+            sb.Append(Generate(node));
         }
 
         return sb;
@@ -54,7 +54,7 @@ class CodeGenerator
             {
                 fnName = functionMap[fnName];
             }
-            sb.AppendLine($"{fnName}({args.ToString()})");
+            sb.Append($"{fnName}({args.ToString()})");
         }
         else if (node is LiteralNode)
         {
