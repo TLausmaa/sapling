@@ -6,24 +6,6 @@ void RunTests()
     tests.RunAll();
 }
 
-// string RunCommandWithBash(string command)
-// {
-//     var psi = new ProcessStartInfo();
-//     psi.FileName = "/bin/bash";
-//     psi.Arguments = $"-c {command}";
-//     psi.RedirectStandardOutput = true;
-//     psi.UseShellExecute = false;
-//     psi.CreateNoWindow = true;
-
-//     using var process = Process.Start(psi);
-
-//     process.WaitForExit();
-
-//     var output = process.StandardOutput.ReadToEnd();
-
-//     return output;
-// }
-
 void CompileTarget(string filename, bool printDebugInfo = false, bool printOutput = false)
 {
     var content = FileReader.ReadFile(filename);
@@ -48,8 +30,6 @@ void CompileTarget(string filename, bool printDebugInfo = false, bool printOutpu
     if (printOutput) {
         Console.WriteLine(output.ToString());
     }
-    // var output = RunCommandWithBash("echo 'hi'");
-    // Console.WriteLine(output);
 }
 
 void Run()
@@ -61,7 +41,7 @@ void Run()
         // return;
     }
 
-    if (opts.Contains("--test") || true)
+    if (opts.Contains("--test"))
     {
         RunTests();
         return;

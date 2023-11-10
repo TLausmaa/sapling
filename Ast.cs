@@ -131,7 +131,12 @@ class Ast
             var fnDecl = new FnDeclNode();
             var fnName = consumer.consume()!.Value.Value;
             fnDecl.Name = fnName;
-            consumer.consume(); // Skip left brace
+            var leftBrace = consumer.consume(); // Skip left brace
+            if (leftBrace!.Value.Type != TokenType.LeftBrace)
+            {
+                throw new Exception($"Line {leftBrace.Value.sourceLocation.Line}: Expected left brace after fn declaration, got {leftBrace.Value.Type}");
+            }
+
             var childTokens = consumer.consumeUntil(TokenType.RightBrace);
             var astNodes = Parse(ref childTokens);
             fnDecl.Children.AddRange(astNodes);
