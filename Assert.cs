@@ -1,5 +1,11 @@
 class Assert
 {
+    class UnexpectedTokenException : Exception
+    {
+        public UnexpectedTokenException(string message) : base(message) { }
+    }
+
+
     public static void AreEqual(int expected, int actual)
     {
         if (expected != actual)
@@ -12,6 +18,7 @@ class Assert
     {
         if (expected.Count != actual.Count)
         {
+            TokenPrinter.Print(actual);
             throw new Exception($"Expected {expected.Count} tokens but got {actual.Count}");
         }
 
@@ -20,14 +27,9 @@ class Assert
             var expectedToken = expected[i];
             var actualToken = actual[i];
 
-            if (expectedToken.Type != actualToken.Type)
+            if (expectedToken.Type != actualToken.Type || expectedToken.Value != actualToken.Value)
             {
-                throw new Exception($"Expected token type {expectedToken.Type} but got {actualToken.Type}");
-            }
-
-            if (expectedToken.Value != actualToken.Value)
-            {
-                throw new Exception($"Expected token value {expectedToken.Value} but got {actualToken.Value}");
+                throw new UnexpectedTokenException($"Expected {expectedToken.Type}: '{expectedToken.Value}' but got {actualToken.Type}: '{actualToken.Value}' at index {i}");
             }
         }
     }

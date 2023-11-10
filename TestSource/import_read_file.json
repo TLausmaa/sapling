@@ -1,0 +1,19 @@
+{
+    "ExpectedTokens": [
+        { "Type": "String", "Value": "\"sapling\"" },
+        { "Type": "LeftBrace", "Value": "{" },
+        { "Type": "Identifier", "Value": "readfile" },
+        { "Type": "RightBrace", "Value": "}" },
+        { "Type": "VariableDecl", "Value": "let" },
+        { "Type": "Identifier", "Value": "content" },
+        { "Type": "Operator", "Value": "=" },
+        { "Type": "Identifier", "Value": "readfile" },
+        { "Type": "LeftParenthesis", "Value": "(" },
+        { "Type": "String", "Value": "\"hello_world.spl\"" },
+        { "Type": "RightParenthesis", "Value": ")" },
+        { "Type": "Identifier", "Value": "print" },
+        { "Type": "LeftParenthesis", "Value": "(" },
+        { "Type": "Identifier", "Value": "content" },
+        { "Type": "RightParenthesis", "Value": ")" }
+    ]
+}

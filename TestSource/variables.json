@@ -1,0 +1,20 @@
+{
+  "ExpectedTokens": [
+    { "Type": "VariableDecl", "Value": "let" },
+    { "Type": "Identifier", "Value": "arr" },
+    { "Type": "Operator", "Value": "=" },
+    { "Type": "LeftBracket", "Value": "[" },
+    { "Type": "Number", "Value": "1" },
+    { "Type": "Number", "Value": "2" },
+    { "Type": "Number", "Value": "3" },
+    { "Type": "RightBracket", "Value": "]" },
+    { "Type": "VariableDecl", "Value": "let" },
+    { "Type": "Identifier", "Value": "instance_name" },
+    { "Type": "Operator", "Value": "=" },
+    { "Type": "String", "Value": "\"abc123\"" },
+    { "Type": "VariableDecl", "Value": "let" },
+    { "Type": "Identifier", "Value": "index" },
+    { "Type": "Operator", "Value": "=" },
+    { "Type": "Number", "Value": "34" }
+  ]
+}

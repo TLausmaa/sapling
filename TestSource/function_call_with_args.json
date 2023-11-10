@@ -1,0 +1,28 @@
+{
+  "ExpectedTokens": [
+    { "Type": "FnDecl", "Value": "fn" },
+    { "Type": "Identifier", "Value": "greet" },
+    { "Type": "LeftParenthesis", "Value": "(" },
+    { "Type": "Identifier", "Value": "person" },
+    { "Type": "Identifier", "Value": "id" },
+    { "Type": "RightParenthesis", "Value": ")" },
+    { "Type": "LeftBrace", "Value": "{" },
+    { "Type": "Identifier", "Value": "print" },
+    { "Type": "LeftParenthesis", "Value": "(" },
+    { "Type": "String", "Value": "\"Hello \"" },
+    { "Type": "Operator", "Value": "+" },
+    { "Type": "Identifier", "Value": "person" },
+    { "Type": "RightParenthesis", "Value": ")" },
+    { "Type": "Identifier", "Value": "print" },
+    { "Type": "LeftParenthesis", "Value": "(" },
+    { "Type": "String", "Value": "\"Id\"" },
+    { "Type": "Identifier", "Value": "id" },
+    { "Type": "RightParenthesis", "Value": ")" },
+    { "Type": "RightBrace", "Value": "}" },
+    { "Type": "Identifier", "Value": "greet" },
+    { "Type": "LeftParenthesis", "Value": "(" },
+    { "Type": "String", "Value": "\"Alice\"" },
+    { "Type": "Number", "Value": "12" },
+    { "Type": "RightParenthesis", "Value": ")" }
+  ]
+}

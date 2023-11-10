@@ -11,7 +11,7 @@ enum TokenType
     String,
     FnDecl,
     VariableDecl,
-    Identifier
+    Identifier,
 }
 
 readonly record struct Token
@@ -59,7 +59,6 @@ class Tokenizer
 {
     TokenType ResolveToken(string value)
     {
-        Console.WriteLine($"Resolving token: '{value}'");
         if (value[0] == '"' && value[^1] == '"')
         {
             return TokenType.String;
@@ -155,7 +154,8 @@ class Tokenizer
                     AddToken(ref tokens, TokenType.LeftParenthesis, c.ToString());
                     break;
                 case ')':
-                    AddToken(ref tokens, TokenType.Identifier, ref current);
+                    //AddToken(ref tokens, TokenType.Identifier, ref current);
+                    AddAndResolveToken(ref tokens, ref current);
                     AddToken(ref tokens, TokenType.RightParenthesis, c.ToString());
                     break;
                 case '{':
