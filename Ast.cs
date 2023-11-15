@@ -40,66 +40,6 @@ class LiteralNode : AstNode
     public string Value { get; set; } = "";
 }
 
-class TokenConsumer
-{
-    public List<Token> Tokens { get; set; }
-    public int Index { get; set; } = 0;
-
-    public TokenConsumer(List<Token> tokens, int index = 0)
-    {
-        Tokens = tokens;
-        Index = index;
-    }
-
-    public Token? consume(int count = 1)
-    {
-        if (Index >= Tokens.Count)
-        {
-            return null;
-        }
-        var token = Tokens[Index];
-        Index += count;
-        return token;
-    }
-
-    public bool hasMore()
-    {
-        return Index < Tokens.Count;
-    }
-
-    public Token peek()
-    {
-        return Tokens[Index];
-    }
-
-    public Token peekNext()
-    {
-        return Tokens[Index + 1];
-    }
-
-    public List<Token> consumeUntil(TokenType type)
-    {
-        var tokens = new List<Token>();
-        var tokenMaybe = consume();
-        while (tokenMaybe.HasValue)
-        {
-            var token = tokenMaybe.Value;
-            if (token.Type == type)
-            {
-                break;
-            }
-            tokens.Add(token);
-            tokenMaybe = consume();
-        }
-        return tokens;
-    }
-
-    public void SetIndex(int i)
-    {
-        Index = i;
-    }
-}
-
 record struct TokenParseResult
 {
     public AstNode Node { get; set; }
@@ -195,52 +135,6 @@ class Ast
             var result = ParseToken(tokens, i);
             RootNodes.Add(result.Node);
             i += result.Consumed;
-        }
-    }
-}
-
-class AstPrinter
-{
-    public static void Print(Ast ast)
-    {
-        Console.WriteLine($"# AST nodes are ({ast.RootNodes.Count}):");
-        Console.WriteLine("".PadRight(30, '='));
-        foreach (var node in ast.RootNodes)
-        {
-            PrintNode(node);
-        }
-        Console.WriteLine("");
-    }
-
-    static void Print(int indent, string s)
-    {
-        Console.WriteLine(new string('-', indent) + s);
-    }
-
-    static void PrintNode(AstNode node, int indent = 0)
-    {
-        switch (node.Type)
-        {
-            case NodeType.FnDecl:
-                Print(indent, $"FnDecl: '{((FnDeclNode)node).Name}'");
-                foreach (var c in node.Children)
-                {
-                    PrintNode(c, indent + 1);
-                }
-                break;
-            case NodeType.FnCall:
-                Print(indent, $"FnCall: '{((FnCallNode)node).Name}'");
-                foreach (var c in node.Children)
-                {
-                    PrintNode(c, indent + 1);
-                }
-                break;
-            case NodeType.Literal:
-                var literal = (LiteralNode)node;
-                Print(indent, $"Literal ({literal.LiteralType}): {literal.Value}");
-                break;
-            default:
-                throw new Exception($"Unknown node type {node.Type}");
         }
     }
 }
