@@ -1,4 +1,4 @@
-enum TokenType
+public enum TokenType
 {
     Number,
     Operator,
@@ -14,7 +14,7 @@ enum TokenType
     Identifier,
 }
 
-readonly record struct Token
+public readonly record struct Token
 {
     public string Value { get; init; }
     public TokenType Type { get; init; }

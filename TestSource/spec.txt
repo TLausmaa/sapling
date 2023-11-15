@@ -1,0 +1,12 @@
+# this is a comment
+# there are no multiline comments
+
+# function declaration with no args
+fn hello {
+  print("hello")
+}
+
+# function that takes args 
+fn hello(str, i) {
+  print("args are:", str, i)
+}

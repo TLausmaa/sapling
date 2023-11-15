@@ -21,6 +21,7 @@ class FnDeclNode : AstNode
 {
     public NodeType Type => NodeType.FnDecl;
     public List<AstNode> Children { get; set; } = new();
+    public List<AstNode> Args { get; set; } = new();
     public string Name { get; set; } = "";
 }
 
@@ -129,12 +130,20 @@ class Ast
         {
             var consumer = new TokenConsumer(tokens, i + 1);
             var fnDecl = new FnDeclNode();
-            var fnName = consumer.consume()!.Value.Value;
+            var fnNameToken = consumer.consume();
+            var fnName = fnNameToken!.Value.Value;
             fnDecl.Name = fnName;
-            var leftBrace = consumer.consume(); // Skip left brace
-            if (leftBrace!.Value.Type != TokenType.LeftBrace)
-            {
-                throw new Exception($"Line {leftBrace.Value.sourceLocation.Line}: Expected left brace after fn declaration, got {leftBrace.Value.Type}");
+            var next = consumer.consume(); // either left brace if no args, or left parenthesis
+            
+            if (next.Value!.Type == TokenType.LeftBrace) {
+                // no-op. 
+            } else if (next.Value!.Type == TokenType.LeftParenthesis) {
+                // parse args
+                var args = consumer.consumeUntil(TokenType.RightParenthesis);
+                var argNodes = Parse(ref args);
+                fnDecl.Args.AddRange(argNodes);
+            } else {
+                throw new UnexpectedTokenException(next.Value, [TokenType.LeftBrace, TokenType.LeftParenthesis], fnNameToken);
             }
 
             var childTokens = consumer.consumeUntil(TokenType.RightBrace);
@@ -163,7 +172,7 @@ class Ast
             }
             else
             {
-                throw new Exception($"Unexpected token type '{next.Value.Type}' after identifier '{token.Value}'");
+                throw new UnexpectedTokenException(next.Value, [TokenType.LeftParenthesis], token);
             }
         }
         else if (token.Type == TokenType.String)

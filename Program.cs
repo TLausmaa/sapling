@@ -1,45 +1,45 @@
-﻿using System.Diagnostics;
-
-void RunTests()
+﻿void RunTests()
 {
     var tests = new TokenizerTests();
     tests.RunAll();
 }
 
-void CompileTarget(string filename, bool printDebugInfo = false, bool printOutput = false)
+void CompileTarget(CompileOptions options)
 {
-    var content = FileReader.ReadFile(filename);
+    var content = FileReader.ReadFile(options.Filename);
     var tokenizer = new Tokenizer();
     var tokens = tokenizer.Tokenize(content);
-    if (printDebugInfo) {
+    if (options.PrintDebug) {
         TokenPrinter.Print(tokens);
     }
 
     var ast = new Ast();
     ast.Build(tokens);
-    if (printDebugInfo) {
+    if (options.PrintDebug) {
         AstPrinter.Print(ast);
     }
 
     var codeGen = new CodeGenerator();
     var output = codeGen.Generate(ast);
-    if (printDebugInfo) {
+    if (options.PrintDebug) {
         codeGen.DebugPrint(output);
     }
 
-    if (printOutput) {
+    if (options.PrintOutput) {
         Console.WriteLine(output.ToString());
     }
 }
 
+/*
+    Different workloads are:
+    1. Compile a file through complete pipeline: $ program <filename>
+        --debug:  print debug info
+        --output: print output
+    2. Run all tests                             $ program --test
+*/
 void Run()
 {
     var opts = Environment.GetCommandLineArgs();
-    if (opts.Length < 2)
-    {
-        // Console.WriteLine("Usage: {program|dotnet run} <filename> [--debug|--output]");
-        // return;
-    }
 
     if (opts.Contains("--test"))
     {
@@ -48,9 +48,19 @@ void Run()
     }
 
     var filename = opts.Length >= 2 ? opts[1] : "TestSource/function_call_with_args.spl";
-    var printDebug = opts.Contains("--debug");
-    var printOutput = opts.Contains("--output");
-    CompileTarget(filename, printDebug, printOutput);
+    
+    CompileTarget(new CompileOptions() {
+        Filename = filename,
+        PrintDebug = opts.Contains("--debug"),
+        PrintOutput = opts.Contains("--output")
+    });
 }
 
 Run();
+
+record struct CompileOptions
+{
+    public string Filename { get; init; }
+    public bool PrintDebug { get; init; }
+    public bool PrintOutput { get; init; }
+}
