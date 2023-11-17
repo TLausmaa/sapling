@@ -38,6 +38,22 @@ class AstPrinter
                 var literal = (LiteralNode)node;
                 Print(indent, $"Literal ({literal.LiteralType}): {literal.Value}");
                 break;
+            case NodeType.Operator:
+                var op = (OperatorNode)node;
+                Print(indent, $"Operator: {op.Operator}");
+                foreach (var c in node.Children)
+                {
+                    PrintNode(c, indent + 1);
+                }
+                break;
+            case NodeType.Identifier:
+                var identifier = (IdentifierNode)node;
+                Print(indent, $"Identifier: {identifier.Name}");
+                foreach (var c in node.Children)
+                {
+                    PrintNode(c, indent + 1);
+                }
+                break;
             default:
                 throw new Exception($"Unknown node type {node.Type}");
         }
