@@ -2,7 +2,9 @@ enum NodeType
 {
     FnDecl,
     FnCall,
-    Literal
+    Literal,
+    Identifier,
+    Operator
 }
 
 enum LiteralType 
@@ -40,30 +42,59 @@ class LiteralNode : AstNode
     public string Value { get; set; } = "";
 }
 
+class IdentifierNode : AstNode
+{
+    public NodeType Type => NodeType.Identifier;
+    public List<AstNode> Children { get; set; } = new();
+    public string Name { get; set; } = "";
+}
+
+class OperatorNode : AstNode 
+{
+    public NodeType Type => NodeType.Operator;
+    public List<AstNode> Children { get; set; } = new();
+    public string Operator { get; set; } = "";
+}
+
 record struct TokenParseResult
 {
     public AstNode Node { get; set; }
     public int Consumed { get; set; }
 }
 
+enum Context 
+{
+    FnDeclArgs,
+    FnCallArgs
+}
+
+class AstParseContext
+{
+    public Token parent { get; init; }
+    public Token previous { get; init; }
+    public Context context { get; init; }
+}
+
 class Ast
 {
     public List<AstNode> RootNodes { get; set; } = new();
 
-    public List<AstNode> Parse(ref List<Token> tokens)
+    public List<AstNode> Parse(ref List<Token> tokens, AstParseContext? context = null)
     {
         var nodes = new List<AstNode>();
         for (int i = 0; i < tokens.Count; i++)
         {
-            var result = ParseToken(tokens, i);
+            var result = ParseToken(tokens, i, context);
             nodes.Add(result.Node);
             i += result.Consumed;
         }
         return nodes;
     }
 
-    public TokenParseResult ParseToken(List<Token> tokens, int i)
+    public TokenParseResult ParseToken(List<Token> tokens, int i, AstParseContext? context = null)
     {
+        Console.WriteLine($"AST: Parsing token '{tokens[i].Type}': '{tokens[i].Value}'");
+        
         Token token = tokens[i];
 
         if (token.Type == TokenType.FnDecl)
@@ -80,8 +111,9 @@ class Ast
             } else if (next.Value!.Type == TokenType.LeftParenthesis) {
                 // parse args
                 var args = consumer.consumeUntil(TokenType.RightParenthesis);
-                var argNodes = Parse(ref args);
+                var argNodes = Parse(ref args, new AstParseContext() { parent = token, context = Context.FnDeclArgs });
                 fnDecl.Args.AddRange(argNodes);
+                consumer.consume(); // Left brace
             } else {
                 throw new UnexpectedTokenException(next.Value, [TokenType.LeftBrace, TokenType.LeftParenthesis], fnNameToken);
             }
@@ -94,38 +126,52 @@ class Ast
         else if (token.Type == TokenType.Identifier)
         {
             var consumer = new TokenConsumer(tokens, i + 1);
-            var next = consumer.consume();
+            Token? next = consumer.hasMore() ? consumer.peek() : null;
 
-            if (next == null)
-            {
-                throw new Exception($"Next token was null. Current token was '{token.Type}': '{token.Value}'");
-            }
-
-            if (next.Value.Type == TokenType.LeftParenthesis)
+            if (next.HasValue && next.Value.Type == TokenType.LeftParenthesis)
             {
                 var fnCall = new FnCallNode();
                 fnCall.Name = token.Value;
+                consumer.consume(); // Left parenthesis
                 var childTokens = consumer.consumeUntil(TokenType.RightParenthesis);
-                var astNodes = Parse(ref childTokens);
+                var astNodes = Parse(ref childTokens, new AstParseContext() { context = Context.FnCallArgs });
                 fnCall.Children.AddRange(astNodes);
                 return new TokenParseResult() { Node = fnCall, Consumed = childTokens.Count + 2 };
             }
+            else if (token.Type == TokenType.Identifier && (context?.context == Context.FnDeclArgs || context?.context == Context.FnCallArgs))
+            {
+                return new TokenParseResult() 
+                { 
+                    Node = new IdentifierNode() { Name = token.Value },
+                    Consumed = 0
+                };
+            }
             else
             {
-                throw new UnexpectedTokenException(next.Value, [TokenType.LeftParenthesis], token);
+                throw new UnexpectedTokenException(next, [TokenType.LeftParenthesis], token);
             }
         }
         else if (token.Type == TokenType.String)
         {
-            return new TokenParseResult() {
-                Node = new LiteralNode {
+            return new TokenParseResult() 
+            {
+                Node = new LiteralNode 
+                {
                     LiteralType = LiteralType.String,
                     Value = token.Value
                 },
-                Consumed = 1
+                Consumed = 0
             };
         }
-        throw new Exception($"Unhandled token type '{token.Type}': '{token.Value}' when parsing into AST");
+        else if (token.Type == TokenType.Operator)
+        {
+            return new TokenParseResult() 
+            {
+                Node = new OperatorNode() { Operator = token.Value },
+                Consumed = 0
+            };
+        }
+        throw new Exception($"Unhandled token type '{token.Type}': '{token.Value}' when parsing AST");
     }
 
     public void Build(List<Token> tokens)
