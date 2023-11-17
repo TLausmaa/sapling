@@ -1,10 +1,10 @@
 class AstPrinter
 {
-    public static void Print(Ast ast)
+    public static void Print(List<AstNode> nodes)
     {
-        Console.WriteLine($"# AST nodes are ({ast.RootNodes.Count}):");
+        Console.WriteLine($"# AST nodes are ({nodes.Count}):");
         Console.WriteLine("".PadRight(30, '='));
-        foreach (var node in ast.RootNodes)
+        foreach (var node in nodes)
         {
             PrintNode(node);
         }

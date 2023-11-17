@@ -14,13 +14,13 @@ void CompileTarget(CompileOptions options)
     }
 
     var ast = new Ast();
-    ast.Build(tokens);
+    var nodes = ast.Build(tokens);
     if (options.PrintDebug) {
-        AstPrinter.Print(ast);
+        AstPrinter.Print(nodes);
     }
 
     var codeGen = new CodeGenerator();
-    var output = codeGen.Generate(ast);
+    var output = codeGen.Generate(nodes);
     if (options.PrintDebug) {
         codeGen.DebugPrint(output);
     }

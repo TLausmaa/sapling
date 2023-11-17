@@ -77,29 +77,30 @@ class AstParseContext
 
 class Ast
 {
-    public List<AstNode> RootNodes { get; set; } = new();
+    public List<AstNode> Build(List<Token> tokens)
+    {
+        return Parse(tokens, new TokenConsumer(tokens));
+    }
 
-    public List<AstNode> Parse(ref List<Token> tokens, AstParseContext? context = null)
+    public List<AstNode> Parse(List<Token> tokens, TokenConsumer consumer, AstParseContext? context = null)
     {
         var nodes = new List<AstNode>();
-        for (int i = 0; i < tokens.Count; i++)
+
+        while (consumer.hasMore())
         {
-            var result = ParseToken(tokens, i, context);
+            var result = ParseToken((Token)consumer.consume()!, consumer, context);
             nodes.Add(result.Node);
-            i += result.Consumed;
         }
+
         return nodes;
     }
 
-    public TokenParseResult ParseToken(List<Token> tokens, int i, AstParseContext? context = null)
+    public TokenParseResult ParseToken(Token token, TokenConsumer consumer, AstParseContext? context = null)
     {
-        Console.WriteLine($"AST: Parsing token '{tokens[i].Type}': '{tokens[i].Value}'");
-        
-        Token token = tokens[i];
+        Console.WriteLine($"AST: Parsing token '{token.Type}': '{token.Value}'");
 
         if (token.Type == TokenType.FnDecl)
         {
-            var consumer = new TokenConsumer(tokens, i + 1);
             var fnDecl = new FnDeclNode();
             var fnNameToken = consumer.consume();
             var fnName = fnNameToken!.Value.Value;
@@ -111,7 +112,7 @@ class Ast
             } else if (next.Value!.Type == TokenType.LeftParenthesis) {
                 // parse args
                 var args = consumer.consumeUntil(TokenType.RightParenthesis);
-                var argNodes = Parse(ref args, new AstParseContext() { parent = token, context = Context.FnDeclArgs });
+                var argNodes = Parse(args, new TokenConsumer(args), new AstParseContext() { parent = token, context = Context.FnDeclArgs });
                 fnDecl.Args.AddRange(argNodes);
                 consumer.consume(); // Left brace
             } else {
@@ -119,13 +120,12 @@ class Ast
             }
 
             var childTokens = consumer.consumeUntil(TokenType.RightBrace);
-            var astNodes = Parse(ref childTokens);
+            var astNodes = Parse(childTokens, new TokenConsumer(childTokens));
             fnDecl.Children.AddRange(astNodes);
             return new TokenParseResult() { Node = fnDecl, Consumed = childTokens.Count + 3 }; // +3 for fnDecl, left brace, right brace
         }
         else if (token.Type == TokenType.Identifier)
         {
-            var consumer = new TokenConsumer(tokens, i + 1);
             Token? next = consumer.hasMore() ? consumer.peek() : null;
 
             if (next.HasValue && next.Value.Type == TokenType.LeftParenthesis)
@@ -134,7 +134,7 @@ class Ast
                 fnCall.Name = token.Value;
                 consumer.consume(); // Left parenthesis
                 var childTokens = consumer.consumeUntil(TokenType.RightParenthesis);
-                var astNodes = Parse(ref childTokens, new AstParseContext() { context = Context.FnCallArgs });
+                var astNodes = Parse(childTokens, new TokenConsumer(childTokens), new AstParseContext() { context = Context.FnCallArgs });
                 fnCall.Children.AddRange(astNodes);
                 return new TokenParseResult() { Node = fnCall, Consumed = childTokens.Count + 2 };
             }
@@ -171,16 +171,17 @@ class Ast
                 Consumed = 0
             };
         }
-        throw new Exception($"Unhandled token type '{token.Type}': '{token.Value}' when parsing AST");
-    }
-
-    public void Build(List<Token> tokens)
-    {
-        for (int i = 0; i < tokens.Count; i++)
+        else if (token.Type == TokenType.Number)
         {
-            var result = ParseToken(tokens, i);
-            RootNodes.Add(result.Node);
-            i += result.Consumed;
+            return new TokenParseResult() 
+            {
+                Node = new LiteralNode
+                {
+                    LiteralType = LiteralType.Number,
+                    Value = token.Value
+                },
+            };
         }
+        throw new Exception($"Unhandled token type '{token.Type}': '{token.Value}' when parsing AST");
     }
 }

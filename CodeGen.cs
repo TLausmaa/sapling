@@ -15,11 +15,11 @@ class CodeGenerator
         Console.WriteLine(sb.ToString());
     }
 
-    public StringBuilder Generate(Ast ast)
+    public StringBuilder Generate(List<AstNode> nodes)
     {
         var sb = new StringBuilder();
 
-        foreach (var node in ast.RootNodes)
+        foreach (var node in nodes)
         {
             sb.Append(Generate(node));
         }
